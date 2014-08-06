@@ -11,6 +11,7 @@ public class Graph {
 	System.out.print("Valor maximo en las ordenadas: ");
 	double value = input.nextDouble();
 	System.out.print("Ecuación de \"y\" a graficar : ");
+	input.useDelimiter("\n");
 	String equation = input.next();
 	input.nextLine();
 	JFrame frame = new JFrame("2D Graph");
