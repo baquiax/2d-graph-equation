@@ -1,0 +1,2 @@
+Main-Class: Graph
+Class-Path: exp4j-0.4.0.ALPHA-3.jar
