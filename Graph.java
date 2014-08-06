@@ -3,6 +3,8 @@ import javax.swing.JComponent;
 import java.util.Scanner;
 import java.util.ArrayList;
 import javax.swing.border.EmptyBorder;
+import java.awt.Color;
+
 public class Graph {
     
     static Scanner input = new Scanner(System.in);
@@ -28,9 +30,9 @@ public class Graph {
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	GraphPane panel = new GraphPane(size, value, equations);
 	frame.getContentPane().add(panel);
-	
 	((JComponent)frame.getContentPane()).setBorder(new EmptyBorder(40, 40, 40, 40) );  
 	frame.pack();
 	frame.setVisible(true);
+	frame.setBackground(Color.black);
     }
 }

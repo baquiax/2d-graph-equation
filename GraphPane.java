@@ -16,6 +16,7 @@ public class GraphPane extends JPanel{
     private ArrayList<String> equations;
     
     public GraphPane (int frameSize, double xSize, ArrayList<String> equations){
+	super();
 	this.frameSize = frameSize;
 	this.maxAxisX = xSize;
 	this.equations = equations;
@@ -23,15 +24,20 @@ public class GraphPane extends JPanel{
     }
     
     public void paintComponent(Graphics g){
+	g.setColor(Color.BLACK);
+	g.fillRect(0, 0, frameSize, frameSize);
+	
+	g.setColor(Color.WHITE);
 	g.drawLine(this.frameSize/2, 0, this.frameSize/2, this.frameSize); //Y Axis
 	g.drawLine(0, this.frameSize/2, this.frameSize, this.frameSize/2); //X Axis
-	
+		
 	double[] intervalAxis = this.getIntervals();
 	int intervalSize = this.frameSize/(intervalAxis.length - 1);
 	int x = 0 , y = this.frameSize/2, vA = intervalAxis.length - 1;		
 	g.setFont(new Font("Sansserif", Font.PLAIN, this.frameSize/40));
 	int origin = (int)(Math.round(intervalAxis.length/2.0) - 1);
 	
+
 	for(int i = 0; i < intervalAxis.length ; i++) {
 	    x = intervalSize * i;
 	    if (i == origin) {			
@@ -53,9 +59,7 @@ public class GraphPane extends JPanel{
 	    g.drawLine(y+5, x, y-5, x); // ___ Intervals in Y axis
 	    vA--;
 	}
-	
-
-	
+		
 	for(String equation: equations) {
 	    Random r = new Random();
 	    Color randomColor = new Color(r.nextFloat(), r.nextFloat(), r.nextFloat());
