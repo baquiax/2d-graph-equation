@@ -1,8 +1,8 @@
 2d-graph-equation
 =================
-**NO IMPLICITO**
+**IMPLICITO**
 
-Graficador de funciones de una variable. e.g  y=x, y = x^2 ...
+Graficador de planos. e.g x = y,  1 = x*x + y*y...
 
 Uste puede compilar las dos clases de las cuales consa el proyecto y ejecutar directamente el ``java``para correr el programa.
 

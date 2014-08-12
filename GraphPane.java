@@ -12,13 +12,11 @@ import java.util.Random;
 public class GraphPane extends JPanel{
     
     private int frameSize;
-    private double maxAxisX;
     private ArrayList<String> equations;
     
-    public GraphPane (int frameSize, double xSize, ArrayList<String> equations){
+    public GraphPane (int frameSize, ArrayList<String> equations){
 	super();
 	this.frameSize = frameSize;
-	this.maxAxisX = xSize;
 	this.equations = equations;
 	setPreferredSize(new Dimension(this.frameSize, this.frameSize));
     }
@@ -27,80 +25,86 @@ public class GraphPane extends JPanel{
 	g.setColor(Color.BLACK);
 	g.fillRect(0, 0, frameSize, frameSize);
 	
-	g.setColor(Color.WHITE);
-	g.drawLine(this.frameSize/2, 0, this.frameSize/2, this.frameSize); //Y Axis
-	g.drawLine(0, this.frameSize/2, this.frameSize, this.frameSize/2); //X Axis
-		
-	double[] intervalAxis = this.getIntervals();
-	int intervalSize = this.frameSize/(intervalAxis.length - 1);
-	int x = 0 , y = this.frameSize/2, vA = intervalAxis.length - 1;		
-	g.setFont(new Font("Sansserif", Font.PLAIN, this.frameSize/40));
-	int origin = (int)(Math.round(intervalAxis.length/2.0) - 1);
+	int middleSize = this.frameSize/2;
 	
+	g.setColor(Color.WHITE);
+	g.drawLine(middleSize, 0, middleSize, this.frameSize); //Y Axis
+	g.drawLine(0, middleSize, this.frameSize, middleSize); //X Axis		
 
-	for(int i = 0; i < intervalAxis.length ; i++) {
-	    x = intervalSize * i;
-	    if (i == origin) {			
-		vA--;
-		continue;	
-	    }
-	    g.drawLine(x, y + 5, x, y-5); // | Intervals in X axis.			
-	    if(i != 5 && vA != 5) {
-		if(i > origin)
-		    g.drawString(String.valueOf(intervalAxis[i]), x-frameSize/40, y+frameSize/21);
-		else
-		    g.drawString(String.valueOf(intervalAxis[i]), x-frameSize/30, y+frameSize/21);
-		
-		if(vA > origin)
-		    g.drawString(String.valueOf(intervalAxis[i]), y-frameSize/13, x+frameSize/60);
-		else
-		    g.drawString(String.valueOf(intervalAxis[i]), y-frameSize/12, x+frameSize/60);
-	    }
-	    g.drawLine(y+5, x, y-5, x); // ___ Intervals in Y axis
-	    vA--;
-	}
-		
+	System.out.println("INIT GRAPH...");
 	for(String equation: equations) {
+	    System.out.println("[EQ] => " + equation);
 	    Random r = new Random();
 	    Color randomColor = new Color(r.nextFloat(), r.nextFloat(), r.nextFloat());
 	    g.setColor(randomColor);
+
+	    //Split implicit equation by =.  e.g y + x  = xy + 1 => [y + x, xy + 1]
+	    String[] eParts =  equation.split("=");
 	    
-	    double min = (-maxAxisX), max = maxAxisX, ratio = frameSize/(max*2), fx;
-	    for(;min<=max;min+=0.025){
-		//preventing round-off error
-		min=Math.round(min*1000.0)/1000.0;
-		fx=Math.round((min*min*min)*1000.0)/1000.0;
-		
-		try {
-		    Expression e = new ExpressionBuilder(equation)
-			.variables("x")
-			.build()
-			.setVariable("x", min);
-		    fx = e.evaluate();
-		    if (!Double.isNaN(fx)) {
-			System.out.println(min + " " + fx);
-			g.drawLine((int)(frameSize/2+(ratio*min)), (int)(frameSize/2-(ratio*fx)),	
-				   (int)(frameSize/2+(ratio*min)), (int)(frameSize/2-(ratio*fx)));
+	    //Left to rigth.
+	    int size = 1;
+	    for (int xAxis = 0 ; xAxis < this.frameSize; xAxis += size) {
+		for (int yAxis = 0; yAxis < middleSize; yAxis += size) {
+		    double firstValue, secondValue;
+		    Expression e;
+		    
+		    //From origin to the bottom.
+		    try {
+			e = new ExpressionBuilder(eParts[0])
+			    .variables("x", "y")
+			    .build()
+			    .setVariable("x", xAxis - middleSize)
+			    .setVariable("y", yAxis);
+			
+			firstValue = e.evaluate();
+
+			e = new ExpressionBuilder(eParts[1])
+			    .variables("x", "y")
+			    .build()
+			    .setVariable("x", xAxis - middleSize)
+			    .setVariable("y", yAxis);
+			
+			secondValue = e.evaluate();
+
+
+			if (!Double.isNaN(firstValue) && !Double.isNaN(secondValue) && firstValue == secondValue) {
+			    System.out.println("[1:2] >> f(" + xAxis + ", " + yAxis + "); " + firstValue + " = " + secondValue );
+			    g.drawLine(xAxis, middleSize + yAxis,	
+				       xAxis, middleSize + yAxis);
+			}
+		    } catch (Exception ex) {
+
 		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}            
+		    
+		    //From origin to the top.
+		    try {
+			e = new ExpressionBuilder(eParts[0])
+			    .variables("x", "y")
+			    .build()
+			    .setVariable("x", xAxis - middleSize)
+			    .setVariable("y", yAxis * -1);			
+			
+			firstValue = e.evaluate();
+
+			e = new ExpressionBuilder(eParts[1])
+			    .variables("x", "y")
+			    .build()
+			    .setVariable("x", xAxis - middleSize)
+			    .setVariable("y", yAxis * -1);
+
+			secondValue = e.evaluate();
+			if (!Double.isNaN(firstValue) && !Double.isNaN(secondValue) && firstValue == secondValue) {
+			    System.out.println("[1:2] >> f(" + xAxis + ", " + (middleSize - yAxis) + "); " + firstValue + " = " + secondValue );
+			    g.drawLine(xAxis, middleSize - yAxis,	
+				       xAxis, middleSize - yAxis);
+			}
+			
+		    } catch (Exception ex) {
+
+		    }    
+		}
 	    }
 	}
-	//This is where I need help, I'm almost completely lost. The function has to be plotted in red	 	
-    }
-    
-    private double[] getIntervals(){
-	int nInt = 5;
-	double increment = this.maxAxisX / nInt, currentInterval = -1 * (increment * nInt);
-	double[] intervals = new double[(nInt * 2) + 1]; //Origin not paint
-	int origin = ((int)Math.round(intervals.length/2.0)) - 1;		
-	
-	for(int i = 0; i < intervals.length ; i++){
-	    intervals[i] = Math.round(currentInterval * 100.0)/100.0;								
-	    currentInterval += increment;
-	    System.out.println(i + "> " + intervals[i]);
-	}
-	return intervals;
-    }
+	System.out.println("END GRAPH...");
+    }    
 }
