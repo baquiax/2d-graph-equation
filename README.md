@@ -1,5 +1,6 @@
 2d-graph-equation
 =================
+**NO IMPLICITO**
 
 Graficador de funciones de una variable. e.g  y=x, y = x^2 ...
 
