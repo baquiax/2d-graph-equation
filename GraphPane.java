@@ -17,7 +17,7 @@ public class GraphPane extends JPanel{
     
     public GraphPane (int frameSize, ArrayList<String> equations){
 	super();
-	this.nUnits = 10.0;
+	this.nUnits = 40.0;
 	this.frameSize = frameSize;
 	this.equations = equations;
 	setPreferredSize(new Dimension(this.frameSize, this.frameSize));
@@ -46,7 +46,7 @@ public class GraphPane extends JPanel{
 	    
 	    //Simple scale: e.g Pixels 400px, nUnits = 8; Pixel representation = 8/400 => 0.02
 	    double pixelScaleSize = (this.nUnits) / this.frameSize;
-		
+	    double rango = .5;
 	    //Left to rigth on X axis.
 	    for (int xAxis = 0 ; xAxis < this.frameSize; xAxis++) {
 		for (int yAxis = 0; yAxis < middleSize; yAxis++) {
@@ -71,10 +71,10 @@ public class GraphPane extends JPanel{
 			secondValue = e.evaluate();
 			
 			
-			if (!Double.isNaN(firstValue) && !Double.isNaN(secondValue) && firstValue == secondValue) {
-			    System.out.println("[1:2] >> f(" + xAxis + ", " + yAxis + "); " + firstValue + " = " + secondValue );
-			    g.drawLine(xAxis, middleSize + yAxis,	
-				       xAxis, middleSize + yAxis);
+			if (!Double.isNaN(firstValue) && !Double.isNaN(secondValue) && Math.abs(firstValue - secondValue) <= rango)  {
+			    System.out.println("[1:2] >> f(" + xAxis + ", " + yAxis + "); " + (firstValue) + " = " + secondValue );
+			    g.drawLine(xAxis, middleSize - yAxis,	
+				       xAxis, middleSize - yAxis);
 			}
 		    } catch (Exception ex) {
 
@@ -97,10 +97,10 @@ public class GraphPane extends JPanel{
 			    .setVariable("y", (yAxis * -1) * pixelScaleSize);
 			
 			secondValue = e.evaluate();
-			if (!Double.isNaN(firstValue) && !Double.isNaN(secondValue) && firstValue == secondValue) {
-			    System.out.println("[1:2] >> f(" + xAxis + ", " + (middleSize - yAxis) + "); " + firstValue + " = " + secondValue );
-			    g.drawLine(xAxis, middleSize - yAxis,	
-				       xAxis, middleSize - yAxis);
+			if (!Double.isNaN(firstValue) && !Double.isNaN(secondValue) && Math.abs(firstValue - secondValue) <= rango) {
+			    System.out.println("[1:2] >> f(" + xAxis + ", " + (middleSize + yAxis) + "); " + firstValue + " = " + secondValue );
+			    g.drawLine(xAxis, middleSize + yAxis,	
+				       xAxis, middleSize + yAxis);
 			}
 			
 		    } catch (Exception ex) {
